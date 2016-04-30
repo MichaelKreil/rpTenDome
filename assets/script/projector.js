@@ -29,6 +29,12 @@ function Projector(type) {
 			document.body.appendChild(me.container);
 		}
 
+		me.initCamera = function () {
+			me.camera = new THREE.PerspectiveCamera(150, window.innerWidth/window.innerHeight, 1, 3000);
+			me.camera.lookAt(new THREE.Vector3(0, 10, 0));
+			me.scene.add(me.camera);
+		}
+
 		me.initRenderer = function () {
 			me.renderer = new THREE.WebGLRenderer({antialias:true});
 			me.renderer.setClearColor(0xffffff);
@@ -37,6 +43,10 @@ function Projector(type) {
 			me.renderer.sortObjects = false;
 
 			me.container.appendChild(me.renderer.domElement);
+		}
+		
+		me.render = function () {
+			me.renderer.render(me.scene, me.camera);
 		}
 
 		me.drawFrame = function () {
@@ -48,7 +58,6 @@ function Projector(type) {
 			if (Date.now() < me.startTime+10000) requestAnimationFrame(me.drawFrame);
 		}
 
-
 		return me;
 	}
 
@@ -56,7 +65,6 @@ function Projector(type) {
 
 	switch (type.toLowerCase()) {
 		case 'cubemap': CubeMapProjector(projector); break;
-		default: PerspectiveProjector(projector);
 	}
 
 	var me = this;
@@ -65,17 +73,6 @@ function Projector(type) {
 	me.animate = function (cb) { projector.animate = cb };
 
 	return me;
-
-	function PerspectiveProjector(p) {
-		p.initCamera = function () {
-			p.camera = new THREE.PerspectiveCamera(150, window.innerWidth/window.innerHeight, 1, 3000);
-			p.camera.lookAt(new THREE.Vector3(0, 10, 0));
-			p.scene.add(p.camera);
-		};
-		p.render = function () {
-			p.renderer.render(p.scene, p.camera);
-		}
-	}
 
 	function CubeMapProjector(p) {
 		/*
