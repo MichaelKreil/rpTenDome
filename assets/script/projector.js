@@ -65,6 +65,7 @@ function Projector(type) {
 
 	switch (type.toLowerCase()) {
 		case 'cubemap': CubeMapProjector(projector); break;
+		case 'vertexshader': VertexShaderProjector(projector); break;
 	}
 
 	var me = this;
@@ -100,9 +101,9 @@ function Projector(type) {
 			var points = [];
 			var n = 80;
 			var s = Math.min(w,h)*0.84;
-			for (var i = -0.999; i <= n*0.6; i++) {
+			for (var i = -0.999; i <= n*0.62; i++) {
 				var x,y;
-				y = Math.PI/2*i/n;
+				y = i/n;
 				if (i < 0) y = 0;
 				x = -Math.log(Math.cos(y));
 				points.push(new THREE.Vector2(y*s+1e-6, x*s))
@@ -114,10 +115,24 @@ function Projector(type) {
 			
 			p.scene2.add(fisheyeReflector);
 			p.camera.lookAt(new THREE.Vector3(0, 10, 0));
-		};
+		}
+		var _initRenderer = p.initRenderer;
+		p.initRenderer = function () {
+			_initRenderer();
+			p.renderer.setClearColor(0);
+		}
 		p.render = function () {
 			p.camera.updateCubeMap(p.renderer, p.scene);
 			p.renderer.render(p.scene2, p.camera2);
 		}
 	}
+
+	function VertexShaderProjector(p) {
+		/*
+			ok, hier bin ich gescheitert :/
+		*/
+	}
 }
+
+
+
