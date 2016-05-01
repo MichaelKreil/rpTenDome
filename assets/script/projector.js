@@ -54,8 +54,11 @@ function Projector(type) {
 			me.render();
 			me.stats.end();
 
-			if (Date.now() < me.startTime+10000) requestAnimationFrame(me.drawFrame);
-			//requestAnimationFrame(me.drawFrame);
+			if (maxDuration) {
+				if (Date.now() < me.startTime+maxDuration*1000) requestAnimationFrame(me.drawFrame);
+			} else {
+				requestAnimationFrame(me.drawFrame);
+			}
 		}
 
 		return me;
@@ -68,10 +71,12 @@ function Projector(type) {
 		case 'vertexshader': VertexShaderProjector(projector); break;
 	}
 
+	var maxDuration = false;
 	var me = this;
 	me.initScene = function (cb) { projector.initScene = cb };
 	me.start = function () { projector.start() };
 	me.animate = function (cb) { projector.animate = cb };
+	me.setMaxDuration = function (seconds) { maxDuration = seconds };
 
 	return me;
 

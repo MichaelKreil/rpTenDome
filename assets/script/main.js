@@ -1,4 +1,5 @@
-var projector = new Projector('cubemap');
+var projector = new Projector('cubemapdebug');
+projector.setMaxDuration(10);
 
 var spheres = [];
 
