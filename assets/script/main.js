@@ -1,4 +1,4 @@
-var projector = new Projector('');
+var projector = new Projector('cubemap');
 
 var spheres = [];
 

@@ -10,7 +10,6 @@ function Projector(type) {
 			me.container = false;
 			me.camera = false;
 			me.scene = new THREE.Scene();
-			me.group = 4;
 			me.renderer = false;
 
 			me.startTime = Date.now();
@@ -88,34 +87,36 @@ function Projector(type) {
 		p.initCamera = function () {
 			var w = window.innerWidth;
 			var h = window.innerHeight;
+			var s = Math.min(w,h);
 			p.camera = new THREE.CubeCamera(1, 3000, 1024);
 			p.camera.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
+			p.camera.lookAt(new THREE.Vector3(0, 10, 0));
 
 			p.scene2 = new THREE.Scene();
-			p.camera2 = new THREE.OrthographicCamera(-w/2, w/2, h/2, -h/2, 1, 3000);
-			p.camera2.position.z = Math.min(w,h);
+			p.camera2 = new THREE.OrthographicCamera(-w/2, w/2, h/2, -h/2, 1000000, 1001000);
+			p.camera2.position.z = 1000001;
+			p.camera2.lookAt(new THREE.Vector3(0, 0, 0))
 			p.scene2.add(p.camera2);
 
 			var material = new THREE.MeshBasicMaterial({envMap:p.camera.renderTarget});
-			//var material = new THREE.MeshNormalMaterial();
+			//var material = new THREE.MeshNormalMaterial({wireframe:true});
 
 			var points = [];
-			var n = 80;
-			var s = Math.min(w,h)*0.84;
-			for (var i = -0.999; i <= n*0.62; i++) {
-				var x,y;
-				y = i/n;
-				if (i < 0) y = 0;
-				x = -Math.log(Math.cos(y));
-				points.push(new THREE.Vector2(y*s+1e-6, x*s))
+			var n = 50;
+			var size = s/2;
+			for (var i = 0; i <= n; i++) {
+				var y = (i-0.5)/(n-2);
+				if (y < 0) y = 0;
+				var x = -Math.log(Math.cos(y))/Math.tan(1);
+				points.push(new THREE.Vector3(y*size+1e-10, x*size, 0))
 			}
 
-			var fisheyeReflector = new THREE.LatheGeometry(points, n*2);
+			var fisheyeReflector = new THREE.LatheGeometry(points, Math.round(n*Math.PI));
 			fisheyeReflector = new THREE.Mesh(fisheyeReflector, material);
 			fisheyeReflector.rotation.x = -Math.PI/2;
+			fisheyeReflector.updateMatrix();
 			
 			p.scene2.add(fisheyeReflector);
-			p.camera.lookAt(new THREE.Vector3(0, 10, 0));
 		}
 		var _initRenderer = p.initRenderer;
 		p.initRenderer = function () {
