@@ -56,6 +56,7 @@ function Projector(type) {
 			me.stats.end();
 
 			if (Date.now() < me.startTime+10000) requestAnimationFrame(me.drawFrame);
+			//requestAnimationFrame(me.drawFrame);
 		}
 
 		return me;

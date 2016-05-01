@@ -1,4 +1,6 @@
-var projector = new Projector('cubemap');
+var projector = new Projector('');
+
+var spheres = [];
 
 projector.initScene(function (scene) {
 	// Fog
@@ -57,36 +59,48 @@ projector.initScene(function (scene) {
 	var sky = new THREE.Mesh( skyGeo, skyMat );
 	scene.add(sky);
 
-	var geometry = new THREE.OctahedronGeometry(30, 3);
+	var geometry = new THREE.IcosahedronGeometry(30, 3);
 
 	this.group = new THREE.Group();
 
 	for (var i = 0; i < 100; i++) {
-		var material = new THREE.MeshPhongMaterial( {
+		var material = new THREE.MeshStandardMaterial( {
 			color: Math.floor(Math.random()*0xffffff),
-			specular: 0xffffff
+			roughness: 0.3,
+			metalness: 0
 		});
-		var mesh = new THREE.Mesh( geometry, material );
-		var r = Math.random()*200+800;
-		var a = Math.random()*Math.PI*2;
-		var y = Math.random()*200+200;
-		mesh.position.x = Math.cos(a)*r;
-		mesh.position.y = y;
-		mesh.position.z = Math.sin(a)*r;
+		var sphere = new THREE.Mesh(geometry, material);
+		sphere.matrixAutoUpdate = false;
 
-		mesh.matrixAutoUpdate = false;
-		mesh.updateMatrix();
-
-		this.group.add(mesh);
+		this.group.add(sphere);
+		spheres.push(sphere);
 	}
+
+	spheres.forEach(function (sphere) {
+		var r = Math.random()*300+300;
+		var a = Math.random()*Math.PI*2;
+		var y = Math.random()*200+30;
+		var cx = (Math.random()-0.5)*200;
+		var cz = (Math.random()-0.5)*200;
+		var speed = Math.random()*0.03+0.03;
+
+		sphere.updatePosition = function (time) {
+			sphere.position.x = cx + Math.cos(a + time*speed)*r;
+			sphere.position.y = y;
+			sphere.position.z = cz + Math.sin(a + time*speed)*r;
+			sphere.updateMatrix();
+		}
+	})
 
 	scene.add(this.group);
 })
 
 projector.animate(function (scene) {
-	this.group.rotation.x = 0;
-	this.group.rotation.y = Date.now() * 0.00003;
-	this.group.rotation.z = 0;
+	var time = Date.now()/1000;
+
+	spheres.forEach(function (sphere) {
+		sphere.updatePosition(time);
+	})
 })
 
 window.addEventListener('load', projector.start);
