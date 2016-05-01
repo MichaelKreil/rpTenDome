@@ -68,6 +68,7 @@ function Projector(type) {
 
 	switch (type.toLowerCase()) {
 		case 'cubemap': CubeMapProjector(projector); break;
+		case 'cubemapdebug': CubeMapProjector(projector, true); break;
 		case 'vertexshader': VertexShaderProjector(projector); break;
 	}
 
@@ -80,7 +81,7 @@ function Projector(type) {
 
 	return me;
 
-	function CubeMapProjector(p) {
+	function CubeMapProjector(p, debug) {
 		/*
 			Verwendet eine CubeMap ... also 6 Cameras in alle Richtungen.
 			Der damit gerenderte Buffer wird als Environment Map für eine "Kugel" verwendet.
@@ -93,7 +94,7 @@ function Projector(type) {
 			var w = window.innerWidth;
 			var h = window.innerHeight;
 			var s = Math.min(w,h);
-			p.camera = new THREE.CubeCamera(1, 3000, 1024);
+			p.camera = new THREE.CubeCamera(1, 3000, debug ? 512 : 2048);
 			p.camera.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
 			p.camera.lookAt(new THREE.Vector3(0, 10, 0));
 
